@@ -1,0 +1,68 @@
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      sha256: ${{ steps.checksum.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Patch fonts
+        run: ./scripts/patch.sh
+
+      - name: Verify patched output
+        run: |
+          python3 -m pip install --quiet fonttools
+          python3 scripts/verify.py out
+
+      - name: Package
+        run: ./scripts/package.sh "${{ steps.version.outputs.version }}"
+
+      - id: checksum
+        run: |
+          file="dist/DMMonoNerdFont-v${{ steps.version.outputs.version }}.zip.sha256"
+          echo "sha256=$(cut -d' ' -f1 "$file")" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.zip
+            dist/*.sha256
+            dist/*.ttf
+
+  update-tap:
+    needs: build-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open cask-bump PR in the tap
+        env:
+          GH_TOKEN: ${{ secrets.TAP_PAT }}
+          VERSION: ${{ needs.build-release.outputs.version }}
+          SHA256: ${{ needs.build-release.outputs.sha256 }}
+        run: |
+          set -euo pipefail
+          gh repo clone quizhats/homebrew-fonts tap
+          cd tap
+          cask="Casks/font-dm-mono-nerd-font.rb"
+          sed -i -E "s/^(  version )\".*\"/\1\"${VERSION}\"/" "$cask"
+          sed -i -E "s/^(  sha256 )\".*\"/\1\"${SHA256}\"/" "$cask"
+          branch="bump-dm-mono-${VERSION}"
+          git switch -c "$branch"
+          git -c user.name="github-actions[bot]" \
+              -c user.email="github-actions[bot]@users.noreply.github.com" \
+              commit -am "feat: update font-dm-mono-nerd-font to ${VERSION}"
+          git push -u origin "$branch"
+          gh pr create --fill --base main --head "$branch"
