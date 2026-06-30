@@ -28,11 +28,15 @@ jobs:
           python3 scripts/verify.py out
 
       - name: Package
-        run: ./scripts/package.sh "${{ steps.version.outputs.version }}"
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: ./scripts/package.sh "$VERSION"
 
       - id: checksum
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          file="dist/DMMonoNerdFont-v${{ steps.version.outputs.version }}.zip.sha256"
+          file="dist/DMMonoNerdFont-v${VERSION}.zip.sha256"
           echo "sha256=$(cut -d' ' -f1 "$file")" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
