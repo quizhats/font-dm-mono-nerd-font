@@ -6,11 +6,11 @@
 
 **Architecture:** Vendor the 6 upstream DM Mono TTFs in `src/`. A shell script patches them with the official `nerdfonts/patcher` Docker image into Standard + Mono flavors. A second script zips the output and emits a checksum. GitHub Actions smoke-tests on PRs and, on a `v*` tag, builds, creates the Release, and opens a cask-bump PR against the separate tap repo `quizhats/homebrew-fonts`.
 
-**Tech Stack:** Bash, Docker (`nerdfonts/patcher:v3.4.0`), Python `fonttools` (verification only), GitHub Actions, Homebrew Cask (Ruby).
+**Tech Stack:** Bash, Docker (`nerdfonts/patcher:4.22.1`), Python `fonttools` (verification only), GitHub Actions, Homebrew Cask (Ruby).
 
 ## Global Constraints
 
-- Patcher image pinned: `nerdfonts/patcher:v3.4.0` (never `:latest`).
+- Patcher image pinned: `nerdfonts/patcher:4.22.1` (never `:latest`).
 - Sources vendored from `google/fonts` `main` branch, path `ofl/dmmono/`: the 6 static TTFs (`DMMono-Light`, `DMMono-LightItalic`, `DMMono-Regular`, `DMMono-Italic`, `DMMono-Medium`, `DMMono-MediumItalic`) plus `OFL.txt`. The fonts stay OFL-1.1.
 - Two flavors per weight: Standard = `--complete --careful`; Mono = `--complete --careful --mono`. 6 weights x 2 flavors = 12 patched TTFs.
 - Patched family names must contain "Nerd Font" (OFL Reserved Font Name rename; the patcher does this).
@@ -142,7 +142,7 @@ set -euo pipefail
 # Standard -> "DM Mono Nerd Font" (icons up to double-width)
 # Mono     -> "DM Mono Nerd Font Mono" (all glyphs single-width)
 
-PATCHER_IMAGE="nerdfonts/patcher:v3.4.0"
+PATCHER_IMAGE="nerdfonts/patcher:4.22.1"
 SRC_DIR="${SRC_DIR:-$(pwd)/src}"
 OUT_DIR="${OUT_DIR:-$(pwd)/out}"
 
@@ -171,7 +171,7 @@ Run: `chmod +x scripts/patch.sh`
 - [ ] **Step 4: Run the patcher**
 
 Run: `./scripts/patch.sh`
-Expected: pulls `nerdfonts/patcher:v3.4.0` on first run, prints `Patched TTFs produced: 12`.
+Expected: pulls `nerdfonts/patcher:4.22.1` on first run, prints `Patched TTFs produced: 12`.
 
 - [ ] **Step 5: Run verification and confirm it passes**
 
@@ -500,7 +500,7 @@ Requires Docker.
 ./scripts/package.sh 1.0.0         # -> dist/ zip + sha256
 ```
 
-Patching uses the pinned `nerdfonts/patcher:v3.4.0` image.
+Patching uses the pinned `nerdfonts/patcher:4.22.1` image.
 
 ## Releasing
 

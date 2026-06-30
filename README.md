@@ -31,7 +31,7 @@ Requires Docker.
 ./scripts/package.sh 1.0.0         # -> dist/ zip + sha256
 ```
 
-Patching uses the pinned `nerdfonts/patcher:v3.4.0` image.
+Patching uses the pinned `nerdfonts/patcher:4.22.1` image.
 
 ## Releasing
 

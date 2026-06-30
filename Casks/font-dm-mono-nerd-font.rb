@@ -12,8 +12,8 @@ cask "font-dm-mono-nerd-font" do
     strategy :github_latest
   end
 
-  # Expected --makegroups output - reconcile against the real patched
-  # filenames (ls out/) after the first CI build/release.
+  # Confirmed against nerdfonts/patcher 4.22.1 output. Re-check with ls out/
+  # if the patcher version changes.
   # Standard flavor
   font "DMMonoNerdFont-Regular.ttf"
   font "DMMonoNerdFont-Italic.ttf"

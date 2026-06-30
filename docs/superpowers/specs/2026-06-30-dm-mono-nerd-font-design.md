@@ -47,7 +47,7 @@ font-dm-mono-nerd-font/
 ## Build pipeline
 
 Patching uses the official **`nerdfonts/patcher`** Docker image, **pinned** to an
-explicit version tag (e.g. `nerdfonts/patcher:v3.4.0`; exact tag verified during
+explicit version tag (e.g. `nerdfonts/patcher:4.22.1`; exact tag verified during
 implementation). No local FontForge required.
 
 `scripts/patch.sh` runs the image twice over `src/`:
