@@ -105,6 +105,23 @@ end
 - Release notes record the upstream DM Mono version and the pinned
   `nerdfonts/patcher` image tag, so every release maps to exact inputs.
 
+## Why a personal tap and not official `homebrew/cask`
+
+A new self-owned font cask cannot get into `homebrew/cask` directly:
+
+- Notability: repos under 30 forks / 30 watchers / 75 stars are rejected as "too
+  obscure"; for self-submitted casks (PR author owns the repo) the bar rises to
+  90 forks / 90 watchers / 225 stars.
+- Self-patched forks fall under "Unofficial, Vendorless, and Walled builds", which
+  Homebrew does not accept, and "Cask is not a discoverability service".
+
+Every official `font-*-nerd-font` cask exists only because the font is in the
+official `ryanoasis/nerd-fonts` project (which is notable enough), whose releases
+generate the casks. Getting DM Mono there means upstreaming it (see
+[issue #1299](https://github.com/ryanoasis/nerd-fonts/issues/1299)) — maintainer-gated
+and slow. We chose the self-controlled personal-tap route instead. Upstreaming
+remains a possible later move; if it lands, this tap can be deprecated.
+
 ## Out of scope (v1)
 
 - npm / Fontsource packaging.
