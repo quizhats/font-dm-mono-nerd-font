@@ -40,7 +40,7 @@ jobs:
           echo "sha256=$(cut -d' ' -f1 "$file")" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           files: |
             dist/*.zip
@@ -58,6 +58,8 @@ jobs:
           SHA256: ${{ needs.build-release.outputs.sha256 }}
         run: |
           set -euo pipefail
+          # Configure git to authenticate pushes with GH_TOKEN (gh repo clone alone does not).
+          gh auth setup-git
           gh repo clone quizhats/homebrew-fonts tap
           cd tap
           cask="Casks/font-dm-mono-nerd-font.rb"
