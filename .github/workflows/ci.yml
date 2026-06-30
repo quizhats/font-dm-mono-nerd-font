@@ -1,0 +1,20 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  patch-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch fonts
+        run: ./scripts/patch.sh
+
+      - name: Verify patched output
+        run: |
+          python3 -m pip install --quiet fonttools
+          python3 scripts/verify.py out
