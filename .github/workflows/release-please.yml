@@ -1,0 +1,63 @@
+name: release-please
+
+# release-please computes the semver from conventional commits and maintains a
+# release PR. Merging that PR tags vX.Y.Z and creates the GitHub Release; the
+# build/attest/upload steps then run in the SAME job (a tag created by
+# GITHUB_TOKEN cannot trigger a separate workflow), keeping this credential-free.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write        # maintain release PR, tag, create release, upload assets
+      pull-requests: write    # maintain the release PR
+      id-token: write         # OIDC for provenance attestation
+      attestations: write     # write the build provenance attestation
+    steps:
+      - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      # Everything below runs only on the push that merged a release PR.
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        if: ${{ steps.release.outputs.release_created }}
+
+      - name: Patch fonts
+        if: ${{ steps.release.outputs.release_created }}
+        run: ./scripts/patch.sh
+
+      - name: Verify patched output
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          python3 -m pip install --quiet fonttools==4.63.0
+          python3 scripts/verify.py out
+
+      - name: Package
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          TAG: ${{ steps.release.outputs.tag_name }}
+        run: ./scripts/package.sh "${TAG#v}"
+
+      - name: Attest build provenance
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
+        with:
+          subject-path: |
+            dist/*.zip
+            dist/*.ttf
+
+      - name: Upload release assets
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.release.outputs.tag_name }}
+        run: gh release upload "$TAG" dist/*.zip dist/*.sha256 dist/*.ttf --clobber
