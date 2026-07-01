@@ -35,8 +35,10 @@ Patching uses the pinned `nerdfonts/patcher:4.22.1` image.
 
 ## Releasing
 
-Push a `vX.Y.Z` tag. CI patches, packages, creates the GitHub Release, and
-opens a cask-bump PR against `quizhats/homebrew-fonts`.
+Push a semver `vX.Y.Z` tag. CI patches, packages, creates the GitHub Release,
+and attaches a signed build-provenance attestation. The `quizhats/homebrew-fonts`
+tap watches this repo's releases and updates its own cask (verifying the
+attestation first), so this repo needs no cross-repo credentials.
 
 ## License
 

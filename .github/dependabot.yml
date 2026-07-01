@@ -1,0 +1,11 @@
+version: 2
+updates:
+  # Keep the SHA-pinned GitHub Actions current with security/version PRs.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # Wait 7 days before proposing a newly published version, so a
+    # compromised or unstable fresh release is not adopted immediately.
+    cooldown:
+      default-days: 7

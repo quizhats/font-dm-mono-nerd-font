@@ -5,8 +5,10 @@ set -euo pipefail
 # Standard -> "DM Mono Nerd Font" (icons up to double-width)
 # Mono     -> "DM Mono Nerd Font Mono" (all glyphs single-width)
 
-# Tag tracks the font-patcher version (not the nerd-fonts release number).
-PATCHER_IMAGE="nerdfonts/patcher:4.22.1"
+# Pinned by digest for reproducibility and supply-chain integrity.
+# Digest is font-patcher image tag 4.22.1 (tag tracks the patcher version,
+# not the nerd-fonts release number).
+PATCHER_IMAGE="nerdfonts/patcher@sha256:5d7ffcb702a7c14eeda9b107f9dadd6d250dedf9d1f0993d966b4fd8337c47a6"
 SRC_DIR="${SRC_DIR:-$(pwd)/src}"
 OUT_DIR="${OUT_DIR:-$(pwd)/out}"
 
