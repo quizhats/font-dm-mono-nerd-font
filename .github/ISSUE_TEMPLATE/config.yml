@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/quizhats/font-dm-mono-nerd-font/security/advisories/new
+    about: Report a security vulnerability privately, not as a public issue.
+  - name: Upstream DM Mono font
+    url: https://github.com/googlefonts/dm-fonts
+    about: Issues with the base DM Mono font belong upstream.
+  - name: Upstream Nerd Fonts patcher
+    url: https://github.com/ryanoasis/nerd-fonts
+    about: Issues with glyph sets or the patcher belong upstream.
